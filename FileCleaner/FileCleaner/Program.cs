@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-
 
 namespace FileCleaner
 {
@@ -12,19 +7,31 @@ namespace FileCleaner
     {
         static void Main(string[] args)
         {
-            Cleaner myCleaner = new Cleaner();
+            //brak obsługi wyjątków, co jeśli args[0], args[1], args[2] 
+            //to będą niepoprawne dane, lub będzie któregoś brakowało?
+            var extensions = ConvertUserArgToExtensions(args[1]);
+
             string path = args[0];
-            byte days = Byte.Parse(args[2]);
-            List<string> extensions = new List<string>(args[1].Split(','));
-            for (int i = 0; i < extensions.Count; i++)
+            string[] files = Directory.GetFiles(path);
+
+            DeleteFiles(files, extensions, args[2]);
+        }
+
+        private static void DeleteFiles(string[] files, string[] extensions, string daysArg)
+        {
+            int days = Int32.Parse(daysArg);
+            var cleaner = new Cleaner();
+            cleaner.DeleteFiles(files, extensions, days);
+        }
+
+        private static string[] ConvertUserArgToExtensions(string arg)
+        {
+            var extensions = arg.Split(',');
+            for (int i = 0; i < extensions.Length; i++)
             {
                 extensions[i] = String.Format(".{0}", extensions[i]);
             }
-            string[] files = Directory.GetFiles(path);
-            foreach (string file in files)
-            {
-                myCleaner.deleteFile(file, extensions, days);
-            }
-        }        
+            return extensions;
+        }
     }
 }

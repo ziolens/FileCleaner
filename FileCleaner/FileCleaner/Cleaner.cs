@@ -1,21 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 
 namespace FileCleaner
 {
-    class Cleaner
+    public class Cleaner
     {
-        public void deleteFile(string fileToDelete, List<string> extensions, byte days)
+        private void DeleteFile(string fileName, IEnumerable<string> extensions, int days)
         {
-            FileInfo fileInfo = new FileInfo(fileToDelete);
-            if (extensions.Contains(fileInfo.Extension) && fileInfo.LastWriteTime < DateTime.Today.AddDays(days * -1))
+            var fileInfo = new FileInfo(fileName);
+            int daysToSubstract = days * -1;
+            if (extensions.Contains(fileInfo.Extension) 
+                && fileInfo.LastWriteTime < DateTime.Today.AddDays(daysToSubstract))
             {
                 fileInfo.Delete();
             }
-        }        
+        }
+
+        public void DeleteFiles(string[] files, string[] extensions, int days)
+        {
+            foreach (string file in files)
+            {
+                DeleteFile(file, extensions, days);
+            }
+        }
     }
 }
